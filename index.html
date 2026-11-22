@@ -65,7 +65,7 @@ details p{margin:10px 0 0;color:var(--muted);max-width:760px}
 .reveal{transition:opacity .8s ease,transform .8s ease}
 @media (prefers-reduced-motion:reduce){.reveal,.reveal.pre{transition:none;opacity:1;transform:none}}
 .field{display:block;margin:0 0 12px;font-family:Helvetica,Arial,sans-serif;font-size:14px}
-.field input,.field textarea,.field select{display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.field input,.field textarea,.field select{display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 button.btn{border:1px solid var(--accent);cursor:pointer}
 .btn.ghost{background:transparent;color:var(--accent)}
@@ -269,8 +269,20 @@ button.btn{border:1px solid var(--accent);cursor:pointer}
 </script>
 <script>
 (function(){
-  if(!window.claude||!window.claude.use)return;
   var $=function(id){return document.getElementById(id);};
+  if(!window.claude||!window.claude.use){
+    $("ask-send").onclick=function(){
+      var q=$("ask-q").value.trim(),n=$("ask-name").value.trim(),note=$("ask-note");
+      if(!q){note.textContent="Type your question first.";return;}
+      var body=q+(n?"\n\n- "+n:"");
+      var url="mailto:SmokinBonsai@gmail.com?subject="+encodeURIComponent("Bonsai question"+(n?" from "+n:""))+"&body="+encodeURIComponent(body);
+      note.textContent="Your email app should open with the question filled in. Just tap Send. If nothing opened, ";
+      var a=document.createElement("a");a.href=url;a.textContent="tap here";note.appendChild(a);
+      note.appendChild(document.createTextNode(", or email it to SmokinBonsai@gmail.com or message @SmokinBonsai on Instagram."));
+      window.location.href=url;
+    };
+    return;
+  }
   function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
   Promise.all([claude.use("db"),claude.use("user")]).then(async function(r){
     var db=r[0],user=r[1];if(!db){$("ask-send").onclick=function(){var q=$("ask-q").value.trim(),note=$("ask-note");if(!q){note.textContent="Type your question first.";return;}note.textContent="";var t=document.createTextNode("Tap here to send it by email: ");var a=document.createElement("a");a.href="mailto:SmokinBonsai@gmail.com?subject="+encodeURIComponent("Bonsai question")+"&body="+encodeURIComponent(q);a.target="_blank";a.rel="noopener";a.textContent="SmokinBonsai@gmail.com";note.appendChild(t);note.appendChild(a);};return;}
